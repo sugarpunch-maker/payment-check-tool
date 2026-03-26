@@ -1,0 +1,28 @@
+name: Build Windows EXE
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Python install
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install libraries
+      run: pip install -r requirements.txt pyinstaller
+
+    - name: Build EXE
+      run: pyinstaller --onefile --noconsole run_app.py
+
+    - name: Upload EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: exe-file
+        path: dist/run_app.exe
