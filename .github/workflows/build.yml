@@ -2,6 +2,7 @@ name: Build Windows EXE
 
 on:
   push:
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -11,21 +12,27 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.11"
+        python-version: '3.11'
 
-    - name: Install libraries
-      run: pip install -r requirements.txt pyinstaller streamlit
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
 
     - name: Build EXE
-      run: pyinstaller --onefile --noconsole run_app.py
+      run: |
+        pyinstaller --onefile --noconsole run_app.py
 
     - name: Upload EXE
       uses: actions/upload-artifact@v4
       with:
         name: exe-file
         path: dist/run_app.exe
+
