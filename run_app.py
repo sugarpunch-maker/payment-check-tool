@@ -1,15 +1,23 @@
+import os
 import webbrowser
 import subprocess
 import time
 import sys
-import os
 
-base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-app_path = os.path.join(base_dir, "app.py")
+# 二重起動防止フラグ
+LOCK_FILE = "app.lock"
 
-subprocess.Popen([
-    sys.executable, "-m", "streamlit", "run", app_path
-])
+if not os.path.exists(LOCK_FILE):
 
-time.sleep(5)
-webbrowser.open("http://localhost:8501")
+    # ロック作成
+    with open(LOCK_FILE, "w") as f:
+        f.write("running")
+
+    # Streamlit起動
+    subprocess.Popen([
+        sys.executable, "-m", "streamlit", "run", "app.py", "--server.port", "8501"
+    ])
+
+    time.sleep(5)
+
+    webbrowser.open("http://127.0.0.1:8501")
