@@ -195,7 +195,6 @@ if st.session_state["calculated"]:
     if st.button("再計算", key="recalc_button"):
         st.session_state["calculated"] = False
         st.experimental_rerun()
-):
      
 
 
