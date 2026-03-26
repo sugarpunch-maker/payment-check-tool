@@ -1,23 +1,19 @@
-import os
 import webbrowser
 import subprocess
 import time
 import sys
+import os
 
-# 二重起動防止フラグ
-LOCK_FILE = "app.lock"
+base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+app_path = os.path.join(base_dir, "app.py")
 
-if not os.path.exists(LOCK_FILE):
+# Streamlit起動
+subprocess.Popen([
+    sys.executable, "-m", "streamlit", "run", app_path, "--server.port", "8501"
+])
 
-    # ロック作成
-    with open(LOCK_FILE, "w") as f:
-        f.write("running")
+# 起動待ち
+time.sleep(5)
 
-    # Streamlit起動
-    subprocess.Popen([
-        sys.executable, "-m", "streamlit", "run", "app.py", "--server.port", "8501"
-    ])
-
-    time.sleep(5)
-
-    webbrowser.open("http://127.0.0.1:8501")
+# 1回だけブラウザ起動
+webbrowser.open("http://127.0.0.1:8501")

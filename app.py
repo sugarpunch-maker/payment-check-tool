@@ -73,16 +73,32 @@ def clean_data(df_orders, df_paid):
 
 # ===== 組み合わせ =====
 def find_best_combination(records, target):
-    records = sorted(records, key=lambda x: x[1], reverse=True)
-
+    best_sum = 0
     best_combo = []
-    total = 0
 
-    for pono, amount in records:
-        if total + amount <= target:
-            best_combo.append((pono, amount))
-            total += amount
+    def dfs(i, current_sum, combo):
+        nonlocal best_sum, best_combo
 
+        # 目標超えたら終了
+        if current_sum > target:
+            return
+
+        # 更新
+        if current_sum > best_sum:
+            best_sum = current_sum
+            best_combo = combo[:]
+
+        # 終端
+        if i >= len(records):
+            return
+
+        # 選ぶ
+        dfs(i + 1, current_sum + records[i][1], combo + [records[i]])
+
+        # 選ばない
+        dfs(i + 1, current_sum, combo)
+
+    dfs(0, 0, [])
     return best_combo
 
 # ===== メール送信 =====
@@ -140,6 +156,13 @@ if st.button("計算", key="calc_button"):
         for _, row in df_unpaid.iterrows()
         if pd.notna(row[col_amount]) and row[col_amount] <= target
     ]
+# 金額の大きい順にソート
+    records = sorted(records, key=lambda x: x[1], reverse=True)
+
+# 上位20件に制限（ここに入れる）
+    records = records[:20]
+
+# 組み合わせ計算
 
     best_combo = find_best_combination(records, target)
 
@@ -157,9 +180,11 @@ if st.button("計算", key="calc_button"):
     fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
 
     for row in range(2, ws.max_row+1):
-        if ws.cell(row=row, column=10).value:
+        pono = ws.cell(row=row, column=8).value
+        if pono in best_pono:
             for col in range(1, ws.max_column+1):
                 ws.cell(row=row, column=col).fill = fill
+
 
     wb.save(file_path)
 
