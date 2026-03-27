@@ -28,7 +28,7 @@ jobs:
 
     - name: Build EXE
       run: |
-        pyinstaller --onefile --noconsole run_app.py
+        pyinstaller --onefile run_app.py --add-data "app.py;."
 
     - name: Upload EXE
       uses: actions/upload-artifact@v4
