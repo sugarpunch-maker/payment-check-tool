@@ -22,8 +22,7 @@ jobs:
         pip install pyinstaller
 
     - name: Build exe
-      run: |
-        pyinstaller --onefile run_app.py --add-data "app.py;." --hidden-import streamlit --hidden-import pandas --hidden-import openpyxl
+      run: pyinstaller --onefile run_app.py
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
