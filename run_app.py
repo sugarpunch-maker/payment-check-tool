@@ -1,19 +1,18 @@
-import webbrowser
 import subprocess
-import time
 import sys
-import os
-
-base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-app_path = os.path.join(base_dir, "app.py")
+import webbrowser
+import time
 
 # Streamlit起動
 subprocess.Popen([
-    sys.executable, "-m", "streamlit", "run", app_path, "--server.port", "8501"
+    sys.executable, "-m", "streamlit", "run", "app.py",
+    "--server.port=8501",
+    "--server.headless=true"
 ])
 
-# 起動待ち
-time.sleep(5)
+# 少し待つ
+time.sleep(3)
 
-# 1回だけブラウザ起動
-webbrowser.open("http://127.0.0.1:8501")
+# ブラウザ起動（1回だけ）
+webbrowser.open("http://localhost:8501")
+
