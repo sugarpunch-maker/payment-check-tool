@@ -1,29 +1,43 @@
 import subprocess
-import webbrowser
+import sys
 import time
+import webbrowser
 import socket
+import os
 
 PORT = 8501
+
+def get_app_path():
+    if getattr(sys, 'frozen', False):
+        return os.path.join(sys._MEIPASS, "app.py")
+    return os.path.join(os.path.dirname(__file__), "app.py")
 
 def is_port_open(port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(("127.0.0.1", port)) == 0
 
-# Streamlit起動（ローカル環境）
-subprocess.Popen([
-    "streamlit",
-    "run",
-    "app.py",
-    "--server.port=8501"
-])
+if __name__ == "__main__":
 
-# 起動待ち
-for _ in range(15):
-    time.sleep(1)
-    if is_port_open(PORT):
-        break
+    app_path = get_app_path()
 
-# ブラウザ起動
-webbrowser.open(f"http://localhost:{PORT}")
+    # Streamlit起動
+    subprocess.Popen([
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        app_path,
+        "--server.port=8501",
+        "--server.headless=true"
+    ])
+
+    # 起動待機
+    for _ in range(20):
+        time.sleep(1)
+        if is_port_open(PORT):
+            break
+
+    webbrowser.open(f"http://localhost:{PORT}")
+
 
 
